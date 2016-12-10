@@ -743,8 +743,8 @@
                         </scroller>
                     </scrollView>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="8nT-q8-Ml7">
-                        <rect key="frame" x="14" y="292" width="274" height="32"/>
-                        <buttonCell key="cell" type="push" title="Destroy the cached authorization right" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="wfo-v1-U8z">
+                        <rect key="frame" x="14" y="292" width="303" height="32"/>
+                        <buttonCell key="cell" type="push" title="Destroy the cached authorization reference" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="wfo-v1-U8z">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
