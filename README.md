@@ -4,6 +4,11 @@ This is an example application to demonstrate how to use a privileged helper too
 
 Please undestand the code and improve and customize it to suit your needs and your application. The example code contain minimal error handling and can be improved in many ways.
 
+# Index
+
+* [Requirements](https://github.com/erikberglund/SwiftPrivilegedHelper#requirements)
+* [Setup](https://github.com/erikberglund/SwiftPrivilegedHelper#setup)
+
 # Requirements
 
 * **Tool and language versions**  
@@ -34,14 +39,14 @@ To test the project, you need to update it to use your own signing certificate.
 1. Find the OU of the Developer ID certificate you selected in the application:
  
  ```bash
- $ grep DevelopmentTeam SwiftPrivilegedHelper/MyApplication.xcodeproj/project.pbxproj
+ $ grep DevelopmentTeam /path/to/SwiftPrivilegedHelper/MyApplication.xcodeproj/project.pbxproj
  DevelopmentTeam = Y7QFC8672N;
  ```
 2. For both the application and helper Info.plist:
 3. Replace the OU with your own in **Tools owned after installation** and **Clients allowed to add and remove tool** respectively  
  ![ChangeCertificateOU](https://github.com/erikberglund/SwiftPrivilegedHelper/blob/master/Screenshots/ChangeCertificateOU.png)
 
-Now build and test the application
+Build and test the application.
 
 ### Signing Troubleshooting
 
