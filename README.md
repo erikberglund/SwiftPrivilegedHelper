@@ -8,6 +8,8 @@ Please undestand the code and improve and customize it to suit your needs and yo
 
 * [Requirements](https://github.com/erikberglund/SwiftPrivilegedHelper#requirements)
 * [Setup](https://github.com/erikberglund/SwiftPrivilegedHelper#setup)
+* [Application](https://github.com/erikberglund/SwiftPrivilegedHelper#application)
+* [References](https://github.com/erikberglund/SwiftPrivilegedHelper#references)
 
 # Requirements
 
@@ -30,9 +32,9 @@ Please undestand the code and improve and customize it to suit your needs and yo
 To test the project, you need to update it to use your own signing certificate.
 
 ### Select signing team
-1. Select the project in the navigator
-2. For both the application and helper targets:
-3. Change the signing Team to your Team  
+1. Select the project in the navigator.
+2. For **both** the application and helper targets:
+3. Change the signing Team to your Team.  
  ![ChangeSigningTeam](https://github.com/erikberglund/SwiftPrivilegedHelper/blob/master/Screenshots/ChangeSigningTeam.png)
  
 ### Change signing certificate OU
@@ -42,8 +44,8 @@ To test the project, you need to update it to use your own signing certificate.
  $ grep DevelopmentTeam /path/to/SwiftPrivilegedHelper/MyApplication.xcodeproj/project.pbxproj
  DevelopmentTeam = Y7QFC8672N;
  ```
-2. For both the application and helper Info.plist:
-3. Replace the OU with your own in **Tools owned after installation** and **Clients allowed to add and remove tool** respectively  
+2. For **both** the application and helper Info.plist:
+3. Replace the OU with your own in **Tools owned after installation** and **Clients allowed to add and remove tool** respectively.  
  ![ChangeCertificateOU](https://github.com/erikberglund/SwiftPrivilegedHelper/blob/master/Screenshots/ChangeCertificateOU.png)
 
 Build and test the application.
@@ -51,3 +53,22 @@ Build and test the application.
 ### Signing Troubleshooting
 
 Use [SMJobBlessUtil.py](https://developer.apple.com/library/content/samplecode/SMJobBless/Listings/SMJobBlessUtil_py.html) and correct all issues reported until it doesn't show any output.
+
+# Application
+
+The application installs the helper tool using SMJobBless.
+
+After the tool is installed, you can enter a directory path in the text field at the top and select to either run the `/bin/ls` command with that path as the argument as root using the helper tool either with or without requiring authorization.
+
+The output is shown in the textview below.
+
+This application caches the authorization reference which means that if you have authorized once, you won't have to do that again until you press the "Destroy the cached authorization reference".
+
+This behaviour can easily be changed to either require authrization every time the button is clicked, or after x seconds or never.
+
+# References
+
+The following are links to documentation on the authorization system on macOS.
+
+* [Authorization Services Programming Guide](https://developer.apple.com/library/content/documentation/Security/Conceptual/authorization_concepts/01introduction/introduction.html#//apple_ref/doc/uid/TP30000995-CH204-TP1)
+* [Technical Note TN2095 - Authorization for Everyone](https://developer.apple.com/library/content/technotes/tn2095/_index.html)
