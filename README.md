@@ -2,7 +2,7 @@
 
 This is an example application to demonstrate how to use a privileged helper tool with authentication in Swift 3.0.
 
-Please undestand the code and improve and customize it to suit your needs and application. The example code contain minimal error handling and error checks and can be improved in many ways.
+Please undestand the code and improve and customize it to suit your needs and your application. The example code contain minimal error handling and can be improved in many ways.
 
 # Requirements
 
@@ -10,11 +10,11 @@ Please undestand the code and improve and customize it to suit your needs and ap
  This project was created and only tested using Xcode Version 8.1 (8B62) and Swift 3.0.
 
 * **Developer Certificate**  
- To use a privileged helper tool, the application and helper has to be signed by a valid deverloper certificate.  
- I'm using manual signing with a `Developer ID` certificate in the application, so the guide will assume that setup.
+ To use a privileged helper tool the application and helper has to be signed by a valid deverloper certificate.  
+ I'm using manual signing with a Developer ID certificate in the application, so the guide will assume that setup.
 
 * **SMJobBlessUtil**  
- The python tool for verifying signing for applications using SMJobBless included in the [SMJobBless](https://developer.apple.com/library/content/samplecode/SMJobBless/Introduction/Intro.html#//apple_ref/doc/uid/DTS40010071-Intro-DontLinkElementID_2) example project is extremely useful for troubleshooting signing issues.  
+ The python tool for verifying signing of applications using SMJobBless included in the [SMJobBless](https://developer.apple.com/library/content/samplecode/SMJobBless/Introduction/Intro.html#//apple_ref/doc/uid/DTS40010071-Intro-DontLinkElementID_2) example project is extremely useful for troubleshooting signing issues.  
  
  Dowload it here: [SMJobBlessUtil.py](https://developer.apple.com/library/content/samplecode/SMJobBless/Listings/SMJobBlessUtil_py.html)
  
@@ -31,19 +31,18 @@ To test the project, you need to update it to use your own signing certificate.
  ![ChangeSigningTeam](https://github.com/erikberglund/SwiftPrivilegedHelper/blob/master/Screenshots/ChangeSigningTeam.png)
  
 ### Change signing certificate OU
-1. Find the OU of the Developer ID certificate you selected in the application. You look for the DevelopmentTeam in the pbxproj file inside the xcode project file.
+1. Find the OU of the Developer ID certificate you selected in the application:
  
  ```bash
  $ grep DevelopmentTeam SwiftPrivilegedHelper/MyApplication.xcodeproj/project.pbxproj
  DevelopmentTeam = Y7QFC8672N;
- DevelopmentTeam = Y7QFC8672N;
  ```
 2. For both the application and helper Info.plist:
-3. Change the OU in the _Tools owned after installation_ and _Clients allowed to add and remove tool_ respectively to your certificate OU:  
+3. Replace the OU with your own in **Tools owned after installation** and **Clients allowed to add and remove tool** respectively  
  ![ChangeCertificateOU](https://github.com/erikberglund/SwiftPrivilegedHelper/blob/master/Screenshots/ChangeCertificateOU.png)
 
 Now build and test the application
 
 ### Signing Troubleshooting
 
-Use [SMJobBlessUtil.py](https://developer.apple.com/library/content/samplecode/SMJobBless/Listings/SMJobBlessUtil_py.html) and correct all issues until it's running without output.
+Use [SMJobBlessUtil.py](https://developer.apple.com/library/content/samplecode/SMJobBless/Listings/SMJobBlessUtil_py.html) and correct all issues reported until it doesn't show any output.
