@@ -56,19 +56,19 @@ Use [SMJobBlessUtil.py](https://developer.apple.com/library/content/samplecode/S
 
 # Application
 
-The application installs the helper tool using SMJobBless.
+The application installs the helper tool using [SMJobBless](https://developer.apple.com/reference/servicemanagement/1431078-smjobbless?language=swift).
 
-After the tool is installed, you can enter a directory path in the text field at the top and select to either run the `/bin/ls` command with that path as the argument as root using the helper tool either with or without requiring authorization.
+After the tool is installed, you can enter a directory path in the text field at the top and select to either run the `/bin/ls` command (with the entered path as argument) using the helper tool with or without requiring authorization.
 
 The output is shown in the textview below.
 
 This application caches the authorization reference which means that if you have authorized once, you won't have to do that again until you press the "Destroy the cached authorization reference".
 
-This behaviour can easily be changed to either require authrization every time the button is clicked, or after x seconds or never.
+This behaviour can easily be changed to either require authrization every time, after x seconds or never.
 
 # References
 
-The following are links to documentation on the authorization system on macOS.
+Links to documentation on the authorization system on macOS.
 
 * [Authorization Services Programming Guide](https://developer.apple.com/library/content/documentation/Security/Conceptual/authorization_concepts/01introduction/introduction.html#//apple_ref/doc/uid/TP30000995-CH204-TP1)
 * [Technical Note TN2095 - Authorization for Everyone](https://developer.apple.com/library/content/technotes/tn2095/_index.html)
