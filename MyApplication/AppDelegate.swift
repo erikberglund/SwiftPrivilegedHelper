@@ -49,16 +49,6 @@ class AppDelegate: NSObject, ProcessProtocol, NSApplicationDelegate {
             }
         })
     }
-
-    func redirectLogToDocuments() {
-        
-        let allPaths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
-        let documentsDirectory = allPaths.first!
-        let pathForLog = documentsDirectory.appendingFormat("/yourFile.txt")
-        
-        freopen(pathForLog.cString(using: String.Encoding.ascii)!, "a+", stderr)
-    }
-    
     
     /*
         IBActions
