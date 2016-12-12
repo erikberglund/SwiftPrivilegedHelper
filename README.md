@@ -60,7 +60,7 @@ The helper is installed by using [SMJobBless](https://developer.apple.com/refere
 
 When installed, you can enter a directory path in the text field at the top and select to run the `/bin/ls` command (with the entered path as argument) using the helper tool with or without requiring authorization.
 
-The application caches the authorization reference which means that if you only have to authorize that action once until you press the "Destroy the cached authorization reference" or restart the application.
+The application caches the authorization reference which means that you only have to authorize that action once until you press the "Destroy the cached authorization reference" or restart the application.
 
 This behaviour can easily be changed to either require authrization every time, after x seconds or never.
 
