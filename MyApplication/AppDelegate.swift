@@ -46,6 +46,7 @@ class AppDelegate: NSObject, ProcessProtocol, NSApplicationDelegate {
             installed in
             if !installed {
                 self.installHelper()
+                self.xpcHelperConnection = nil  //  Nulls the connection to force a reconnection
             }
         })
     }
