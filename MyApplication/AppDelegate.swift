@@ -46,6 +46,7 @@ class AppDelegate: NSObject, ProcessProtocol, NSApplicationDelegate {
             installed in
             if !installed {
                 self.installHelper()
+                self.xpcHelperConnection = nil  //  Nulls the connection to force a reconnection
             }
         })
     }
@@ -195,7 +196,7 @@ class AppDelegate: NSObject, ProcessProtocol, NSApplicationDelegate {
             self.xpcHelperConnection!.exportedInterface = NSXPCInterface(with:ProcessProtocol.self)
             self.xpcHelperConnection!.remoteObjectInterface = NSXPCInterface(with:HelperProtocol.self)
             self.xpcHelperConnection!.invalidationHandler = {
-                self.xpcHelperConnection!.invalidationHandler = nil
+                self.xpcHelperConnection?.invalidationHandler = nil
                 OperationQueue.main.addOperation(){
                     self.xpcHelperConnection = nil
                     NSLog("XPC Connection Invalidated\n")
