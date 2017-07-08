@@ -2,6 +2,8 @@
 
 This is an example application to demonstrate how to use a privileged helper tool with authentication in Swift 3.0.
 
+**NOTE: Privilege escalation is not supported in sandboxed applications.**
+
 Please undestand the code and improve and customize it to suit your needs and your application. The example code contain minimal error handling and can be improved in many ways.
 
 # Index
