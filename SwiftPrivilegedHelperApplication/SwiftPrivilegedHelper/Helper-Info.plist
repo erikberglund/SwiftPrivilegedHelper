@@ -9,7 +9,7 @@
 	<key>CFBundleName</key>
 	<string>com.github.erikberglund.SwiftPrivilegedHelper</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0.12</string>
+	<string>1.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>SMAuthorizedClients</key>
