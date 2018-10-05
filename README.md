@@ -53,7 +53,7 @@ Use [SMJobBlessUtil.py](https://developer.apple.com/library/content/samplecode/S
 
 ### Note: Changing BundleIdentifier
 
-The project uses a [bash script]() to automatically update the needed code signing requirements for your current certificate so that they will be correct both during normal builds and archiving. 
+The project uses a [bash script](https://github.com/erikberglund/SwiftPrivilegedHelper/blob/master/SwiftPrivilegedHelperApplication/Scripts/CodeSignUpdate.sh) to automatically update the needed code signing requirements for your current certificate so that they will be correct both during normal builds and archiving. 
 
 This script has hardcoded bundle identifiers for the app and the helper, so if you change the bundle identifiers for any of these you have to update the script accordingly.
 

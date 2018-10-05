@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		532308F32163909800A456CF /* SMJobBlessUtil.py in Resources */ = {isa = PBXBuildFile; fileRef = 532308F22163909800A456CF /* SMJobBlessUtil.py */; };
 		532308FA2163A87600A456CF /* ExtensionsNSTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 532308F92163A87600A456CF /* ExtensionsNSTextView.swift */; };
 		5332883321660B2400028C27 /* HelperAuthorization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53EE3960215E3068007310F5 /* HelperAuthorization.swift */; };
 		5332883421660D7A00028C27 /* HelperAuthorizationRight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53EE3964215E3A85007310F5 /* HelperAuthorizationRight.swift */; };
@@ -62,7 +61,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		532308F22163909800A456CF /* SMJobBlessUtil.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = SMJobBlessUtil.py; sourceTree = "<group>"; };
 		532308F42163910700A456CF /* CodeSignUpdate.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = CodeSignUpdate.sh; sourceTree = "<group>"; };
 		532308F92163A87600A456CF /* ExtensionsNSTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionsNSTextView.swift; sourceTree = "<group>"; };
 		53604C03215E12F300071149 /* SwiftPrivilegedHelperApplication.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftPrivilegedHelperApplication.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -105,7 +103,6 @@
 			isa = PBXGroup;
 			children = (
 				532308F42163910700A456CF /* CodeSignUpdate.sh */,
-				532308F22163909800A456CF /* SMJobBlessUtil.py */,
 			);
 			path = Scripts;
 			sourceTree = "<group>";
@@ -262,7 +259,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				532308F32163909800A456CF /* SMJobBlessUtil.py in Resources */,
 				53604C09215E12F400071149 /* Assets.xcassets in Resources */,
 				53604C0C215E12F400071149 /* MainMenu.xib in Resources */,
 			);
