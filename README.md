@@ -11,7 +11,7 @@ Please undestand the code and improve and customize it to suit your needs and yo
 I have rewritten the whole project for Swift 4.2 and improved the example in many places:
 
 * **Automatic Code Signing**  
- Now the project uses automatic code signing, you no longer have to manually edit the code signing information in the apple and helper plists.
+ Now the project uses automatic code signing, you no longer have to manually edit the code signing information in the app or helper plists.
  
 * **Connection Validation**  
  Now the helper validates that the calling application is signed using the same signing certificate as the calling application to avoid a simple attack vector for helper tools. 
