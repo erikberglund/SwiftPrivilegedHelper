@@ -3,10 +3,10 @@
 <plist version="1.0">
 <dict>
 	<key>Label</key>
-	<string>com.github.erikberglund.MyApplicationHelper</string>
+	<string>com.github.erikberglund.SwiftPrivilegedHelper</string>
 	<key>MachServices</key>
 	<dict>
-		<key>com.github.erikberglund.MyApplicationHelper</key>
+		<key>com.github.erikberglund.SwiftPrivilegedHelper</key>
 		<true/>
 	</dict>
 </dict>
