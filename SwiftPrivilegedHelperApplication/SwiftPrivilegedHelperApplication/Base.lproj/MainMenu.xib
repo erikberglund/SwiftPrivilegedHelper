@@ -819,7 +819,7 @@
                     </textField>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="MeR-ml-Qp3">
                         <rect key="frame" x="18" y="235" width="284" height="18"/>
-                        <buttonCell key="cell" type="check" title="Require Authentication" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="xOz-XP-Ofc">
+                        <buttonCell key="cell" type="check" title="Require User Authentication" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="xOz-XP-Ofc">
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
