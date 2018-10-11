@@ -13,19 +13,28 @@ struct HelperAuthorizationRight {
     let command: Selector
     let name: String
     let description: String
-    let rule: [String: Any]
+    let ruleCustom: [String: Any]?
+    let ruleConstant: String?
 
-    static let ruleDefault: [String: Any] = [
-        kAuthorizationRightKeyClass   : "user",
-        kAuthorizationRightKeyGroup   : "admin",
-        kAuthorizationRightKeyTimeout : 0,
-        kAuthorizationRightKeyVersion : 1
-    ]
-
-    init(command: Selector, name: String? = nil, description: String, rule: [String: Any]? = nil) {
+    init(command: Selector, name: String? = nil, description: String, ruleCustom: [String: Any]? = nil, ruleConstant: String? = nil) {
         self.command = command
         self.name = name ?? HelperConstants.machServiceName + "." + command.description
         self.description = description
-        self.rule = rule ?? HelperAuthorizationRight.ruleDefault
+        self.ruleCustom = ruleCustom
+        self.ruleConstant = ruleConstant
+    }
+
+    func rule() -> CFTypeRef {
+        let rule: CFTypeRef
+        if let ruleCustom = self.ruleCustom as CFDictionary? {
+            rule = ruleCustom
+        } else if let ruleConstant = self.ruleConstant as CFString? {
+            rule = ruleConstant
+        } else {
+            rule = kAuthorizationRuleAuthenticateAsAdmin as CFString
+        }
+
+        return rule
     }
 }
+

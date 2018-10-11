@@ -22,7 +22,7 @@ class HelperAuthorization {
     static let authorizationRights = [
         HelperAuthorizationRight(command: #selector(HelperProtocol.runCommandLs(withPath:authData:completion:)),
                                  description: "SwiftPrivilegedHelper wants to run the command /bin/ls",
-                                 rule: [kAuthorizationRightKeyClass: "user", kAuthorizationRightKeyGroup: "admin", kAuthorizationRightKeyVersion: 3])
+                                 ruleCustom: [kAuthorizationRightKeyClass: "user", kAuthorizationRightKeyGroup: "admin", kAuthorizationRightKeyVersion: 1])
     ]
 
     // MARK: -
@@ -43,10 +43,10 @@ class HelperAuthorization {
             var currentRule: CFDictionary?
 
             osStatus = AuthorizationRightGet(authorizationRight.name, &currentRule)
-            if osStatus == errAuthorizationDenied || self.authorizationRuleUpdateRequired(currentRule, authorizationRight.rule) {
+            if osStatus == errAuthorizationDenied || self.authorizationRuleUpdateRequired(currentRule, authorizationRight: authorizationRight) {
                 osStatus = AuthorizationRightSet(authRef,
                                                  authorizationRight.name,
-                                                 authorizationRight.rule as CFDictionary,
+                                                 authorizationRight.rule(),
                                                  authorizationRight.description as CFString,
                                                  nil,
                                                  nil)
@@ -59,15 +59,25 @@ class HelperAuthorization {
         }
     }
 
-    static func authorizationRuleUpdateRequired(_ currentRuleCFDict: CFDictionary?, _ newRule: [String: Any]) -> Bool {
-        guard
-            let currentRule = currentRuleCFDict as? [String: Any],
-            let currentVersion = currentRule[kAuthorizationRightKeyVersion] as? Int,
-            let newVersion = newRule[kAuthorizationRightKeyVersion] as? Int,
-            newVersion <= currentVersion else {
-                return true
+    static func authorizationRuleUpdateRequired(_ currentRuleCFDict: CFDictionary?, authorizationRight: HelperAuthorizationRight) -> Bool {
+        guard let currentRuleDict = currentRuleCFDict as? [String: Any] else {
+            return true
         }
-        return false
+        let newRule = authorizationRight.rule()
+        if CFGetTypeID(newRule) == CFStringGetTypeID() {
+            if
+                let currentRule = currentRuleDict[kAuthorizationRightKeyRule] as? [String],
+                let newRule = authorizationRight.ruleConstant {
+                return currentRule != [newRule]
+
+            }
+        } else if CFGetTypeID(newRule) == CFDictionaryGetTypeID() {
+            if let currentVersion = currentRuleDict[kAuthorizationRightKeyVersion] as? Int,
+                let newVersion = authorizationRight.ruleCustom?[kAuthorizationRightKeyVersion] as? Int {
+                return currentVersion != newVersion
+            }
+        }
+        return true
     }
 
     // MARK: -

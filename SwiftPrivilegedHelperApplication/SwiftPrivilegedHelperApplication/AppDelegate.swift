@@ -243,7 +243,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, AppProtocol {
         return helper
     }
 
-    func helperStatus(completion: @escaping (Bool) -> Void) {
+    func helperStatus(completion: @escaping (_ installed: Bool) -> Void) {
 
         // Comppare the CFBundleShortVersionString from the Info.plisin the helper inside our application bundle with the one on disk.
 

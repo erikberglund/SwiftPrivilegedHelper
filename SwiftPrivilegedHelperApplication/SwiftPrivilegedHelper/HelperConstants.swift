@@ -10,6 +10,7 @@ import Cocoa
 
 let kAuthorizationRightKeyClass     = "class"
 let kAuthorizationRightKeyGroup     = "group"
+let kAuthorizationRightKeyRule      = "rule"
 let kAuthorizationRightKeyTimeout   = "timeout"
 let kAuthorizationRightKeyVersion   = "version"
 
