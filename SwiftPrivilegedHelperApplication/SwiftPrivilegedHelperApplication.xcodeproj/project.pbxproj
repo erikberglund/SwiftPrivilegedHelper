@@ -282,7 +282,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Scripts/CodeSignUpdate.sh\"\n";
+			shellScript = "\"${SRCROOT}\"/Scripts/CodeSignUpdate.sh\n";
 		};
 		5361D213216254BC0036E296 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
