@@ -245,7 +245,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, AppProtocol {
 
     func helperStatus(completion: @escaping (_ installed: Bool) -> Void) {
 
-        // Comppare the CFBundleShortVersionString from the Info.plisin the helper inside our application bundle with the one on disk.
+        // Comppare the CFBundleShortVersionString from the Info.plist in the helper inside our application bundle with the one on disk.
 
         let helperURL = Bundle.main.bundleURL.appendingPathComponent("Contents/Library/LaunchServices/" + HelperConstants.machServiceName)
         guard
