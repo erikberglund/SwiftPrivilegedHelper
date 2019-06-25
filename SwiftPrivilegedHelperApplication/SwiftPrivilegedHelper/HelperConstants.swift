@@ -6,7 +6,7 @@
 //  Copyright © 2018 Erik Berglund. All rights reserved.
 //
 
-import Cocoa
+import Foundation
 
 let kAuthorizationRightKeyClass     = "class"
 let kAuthorizationRightKeyGroup     = "group"
