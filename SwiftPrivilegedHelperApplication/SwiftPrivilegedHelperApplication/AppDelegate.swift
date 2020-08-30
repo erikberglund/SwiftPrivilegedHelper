@@ -266,20 +266,26 @@ class AppDelegate: NSObject, NSApplicationDelegate, AppProtocol {
         // Install and activate the helper inside our application bundle to disk.
 
         var cfError: Unmanaged<CFError>?
-        var authItem = AuthorizationItem(name: kSMRightBlessPrivilegedHelper, valueLength: 0, value:UnsafeMutableRawPointer(bitPattern: 0), flags: 0)
-        var authRights = AuthorizationRights(count: 1, items: &authItem)
+        return try kSMRightBlessPrivilegedHelper.withCString
+        {
+            var authItem = AuthorizationItem(name: $0, valueLength: 0, value:UnsafeMutableRawPointer(bitPattern: 0), flags: 0)
+            return try withUnsafeMutablePointer(to: &authItem)
+            {
+                var authRights = AuthorizationRights(count: 1, items: $0)
 
-        guard
-            let authRef = try HelperAuthorization.authorizationRef(&authRights, nil, [.interactionAllowed, .extendRights, .preAuthorize]),
-            SMJobBless(kSMDomainSystemLaunchd, HelperConstants.machServiceName as CFString, authRef, &cfError) else {
-                if let error = cfError?.takeRetainedValue() { throw error }
-                return false
+                guard
+                    let authRef = try HelperAuthorization.authorizationRef(&authRights, nil, [.interactionAllowed, .extendRights, .preAuthorize]),
+                    SMJobBless(kSMDomainSystemLaunchd, HelperConstants.machServiceName as CFString, authRef, &cfError) else {
+                        if let error = cfError?.takeRetainedValue() { throw error }
+                        return false
+                }
+
+                self.currentHelperConnection?.invalidate()
+                self.currentHelperConnection = nil
+
+                return true
+            }
         }
-
-        self.currentHelperConnection?.invalidate()
-        self.currentHelperConnection = nil
-
-        return true
     }
 }
 

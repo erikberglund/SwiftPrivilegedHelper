@@ -178,9 +178,12 @@ class HelperAuthorization {
         var authItem = AuthorizationItem(name: authRightName, valueLength: 0, value: UnsafeMutableRawPointer(bitPattern: 0), flags: 0)
 
         // Create the AuthorizationRights for using the AuthorizationItem
-        var authRights = AuthorizationRights(count: 1, items: &authItem)
+        try withUnsafeMutablePointer(to: &authItem)
+        {
+            var authRights = AuthorizationRights(count: 1, items: $0)
 
-        // Check if the user is authorized for the AuthorizationRights. If not the user might be asked for an admin credential.
-        try executeAuthorizationFunction { AuthorizationCopyRights(authRef, &authRights, nil, [.extendRights, .interactionAllowed], nil) }
+            // Check if the user is authorized for the AuthorizationRights. If not the user might be asked for an admin credential.
+            try executeAuthorizationFunction { AuthorizationCopyRights(authRef, &authRights, nil, [.extendRights, .interactionAllowed], nil) }
+        }
     }
 }
