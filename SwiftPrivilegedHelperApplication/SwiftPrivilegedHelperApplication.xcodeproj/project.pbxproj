@@ -478,9 +478,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = Y7QFC8672N;
+				DEVELOPMENT_TEAM = B6QFK6MJHL;
 				INFOPLIST_FILE = SwiftPrivilegedHelperApplication/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -497,9 +498,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = Y7QFC8672N;
+				DEVELOPMENT_TEAM = B6QFK6MJHL;
 				INFOPLIST_FILE = SwiftPrivilegedHelperApplication/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -515,8 +517,9 @@
 		53604C1D215E131E00071149 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = Y7QFC8672N;
+				DEVELOPMENT_TEAM = B6QFK6MJHL;
 				INFOPLIST_FILE = "$(SRCROOT)/SwiftPrivilegedHelper/Helper-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				OTHER_LDFLAGS = (
@@ -539,8 +542,9 @@
 		53604C1E215E131E00071149 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = Y7QFC8672N;
+				DEVELOPMENT_TEAM = B6QFK6MJHL;
 				INFOPLIST_FILE = "$(SRCROOT)/SwiftPrivilegedHelper/Helper-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				OTHER_LDFLAGS = (

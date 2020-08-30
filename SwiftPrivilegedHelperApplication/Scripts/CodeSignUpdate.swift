@@ -44,7 +44,7 @@ let lowerAlpha = [Character](alphabetStr)
 let upperAlpha = [Character](alphabetStr.uppercased())
 let digits = [Character]("0123456789")
 let devIDChars = upperAlpha + digits
-let alphaNummericChars = upperAlpha + lowerAlpha + digits
+let alphaNumericChars = upperAlpha + lowerAlpha + digits
 
 // -----------------------------------------
 struct Environment
@@ -109,7 +109,7 @@ func getBundleIDFrom(_ environmentVariable: String) -> String
         exit(1)
     }
     
-    let bundleIDChars = alphaNummericChars + ["."]
+    let bundleIDChars = alphaNumericChars + ["."]
     
     guard bundleID.count > 1 else
     {
@@ -132,7 +132,7 @@ func getBundleIDFrom(_ environmentVariable: String) -> String
     guard bundleID.first! != "." && bundleID.last! != "." else
     {
         print(
-            "error: Bundle ID must start or end with period: \(bundleID)\n"
+            "error: Bundle ID must not start or end with period: \(bundleID)\n"
             + "\(bundleIDFormatHelp)"
         )
         exit(1)
@@ -319,7 +319,7 @@ func updateSMAuthorizedClients(
     guard let prodBundleID = plistDict["CFBundleIdentifier"] as? String else
     {
         print(
-            "Helper info property list, \(infoPListFile), is missing "
+            "error: Helper info property list, \(infoPListFile), is missing "
             + "\"CFBundleIdentifier\" key, or it not a string"
         )
         exit(1)
@@ -338,7 +338,7 @@ func updateSMAuthorizedClients(
     guard let prodBundleName = plistDict["CFBundleName"] as? String else
     {
         print(
-            "Helper info property list, \(infoPListFile), is missing "
+            "error: Helper info property list, \(infoPListFile), is missing "
             + "\"CFBundleName\" key, or it not a string"
         )
         exit(1)
