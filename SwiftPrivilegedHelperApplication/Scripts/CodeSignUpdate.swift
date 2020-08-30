@@ -98,44 +98,42 @@ Bundle identifiers should be in reverse domain format.  For example:
 """
 
 // -------------------------------------
+func emitError(_ msg: String) -> Never
+{
+    print("error: \(msg)")
+    exit(1)
+}
+
+// -------------------------------------
 func getBundleIDFrom(_ environmentVariable: String) -> String
 {
     guard let bundleID = Environment[environmentVariable] else
     {
-        print(
-            "error: \(environmentVariable) environment variable not set\n"
-            + "\(helpStr)"
+        emitError(
+            "\(environmentVariable) environment variable not set\n\(helpStr)"
         )
-        exit(1)
     }
     
     let bundleIDChars = alphaNumericChars + ["."]
     
-    guard bundleID.count > 1 else
-    {
-        print(
-            "error: Bundle ID is empty\n"
-            + "\(bundleIDFormatHelp)"
-        )
-        exit(1)
+    guard bundleID.count > 1 else {
+        emitError("Bundle ID is empty\n\(bundleIDFormatHelp)")
     }
     
     guard bundleID.reduce(true, { $0 && bundleIDChars.contains($1) }) else
     {
-        print(
-            "error: Bundle ID contains illegal characters: \(bundleID)\n"
+        emitError(
+            "Bundle ID contains illegal characters: \(bundleID)\n"
             + "\(bundleIDFormatHelp)"
         )
-        exit(1)
     }
     
     guard bundleID.first! != "." && bundleID.last! != "." else
     {
-        print(
-            "error: Bundle ID must not start or end with period: \(bundleID)\n"
+        emitError(
+            "Bundle ID must not start or end with period: \(bundleID)\n"
             + "\(bundleIDFormatHelp)"
         )
-        exit(1)
     }
     
     return bundleID
@@ -145,10 +143,8 @@ func getBundleIDFrom(_ environmentVariable: String) -> String
 let bundleIdentifierApplication = getBundleIDFrom("MAIN_BUNDLE_ID")
 let bundleIdentifierHelper = getBundleIDFrom("HELPER_BUNDLE_ID")
 
-guard let infoPListFile = Environment["INFOPLIST_FILE"] else
-{
-    print("error: INFOPLIST_FILE environment variable not set")
-    exit(1)
+guard let infoPListFile = Environment["INFOPLIST_FILE"] else {
+    emitError("INFOPLIST_FILE environment variable not set")
 }
 
 var infoPlist: [String: AnyObject] =
@@ -156,10 +152,8 @@ var infoPlist: [String: AnyObject] =
     let pListURL = URL(fileURLWithPath: infoPListFile)
     guard let pListDict = NSDictionary(contentsOf: pListURL)
         as? Dictionary<String, AnyObject>
-    else
-    {
-        print("error: Unable to read plist data from \(infoPListFile)")
-        exit(1)
+    else {
+        emitError("Unable to read plist data from \(infoPListFile)")
     }
     return pListDict
 }()
@@ -243,16 +237,12 @@ func appendHelperBundleIdentifier(to s: inout String) {
 // -------------------------------------
 func appendDeveloperID(to s: inout String)
 {
-    guard let devTeamID = Environment["DEVELOPMENT_TEAM"] else
-    {
-        print("error: DEVELOPMENT_TEAM environment variable not set")
-        exit(1)
+    guard let devTeamID = Environment["DEVELOPMENT_TEAM"] else {
+        emitError("DEVELOPMENT_TEAM environment variable not set")
     }
     
-    guard isValidDeveloperID(devTeamID) else
-    {
-        print("error: Invalid Development Team Identifier: \(devTeamID)")
-        exit(1)
+    guard isValidDeveloperID(devTeamID) else {
+        emitError("Invalid Development Team Identifier: \(devTeamID)")
     }
     
     s += "certificate leaf[subject.OU] = \(devTeamID)"
@@ -264,17 +254,13 @@ func appendMacDeveloper(to s: inout String)
     guard let macDeveloperCN = Environment["EXPANDED_CODE_SIGN_IDENTITY_NAME"]
     else
     {
-        print(
-            "error: EXPANDED_CODE_SIGN_IDENTITY_NAME environment variable "
-            + "not set"
+        emitError(
+            "EXPANDED_CODE_SIGN_IDENTITY_NAME environment variable not set"
         )
-        exit(1)
     }
     
-    guard isValidDeveloperCN(macDeveloperCN) else
-    {
-        print("error: Invalid Mac Developer CN: \(macDeveloperCN)")
-        exit(1)
+    guard isValidDeveloperCN(macDeveloperCN) else {
+        emitError("Invalid Mac Developer CN: \(macDeveloperCN)")
     }
     
     s += "certificate leaf[subject.CN] = \"\(macDeveloperCN)\""
@@ -286,20 +272,17 @@ func updateSMPriviledgedExecutables(
     with s: String)
 {
     assert(target == "application")
-    guard let prodBundleID = Environment["PRODUCT_BUNDLE_IDENTIFIER"] else
-    {
-        print("error: PRODUCT_BUNDLE_IDENTIFIER environment variable not set")
-        exit(1)
+    guard let prodBundleID = Environment["PRODUCT_BUNDLE_IDENTIFIER"] else {
+        emitError("PRODUCT_BUNDLE_IDENTIFIER environment variable not set")
     }
     
     guard prodBundleID == bundleIdentifierApplication else
     {
-        print(
-            "error: PRODUCT_BUNDLE_IDENTIFIER does not match MAIN_BUNDLE_ID\n"
+        emitError(
+            "PRODUCT_BUNDLE_IDENTIFIER does not match MAIN_BUNDLE_ID\n"
             + "  PRODUCT_BUNDLE_IDENTIFIER = \(prodBundleID)\n"
             + "             MAIN_BUNDLE_ID = \(bundleIdentifierApplication)"
         )
-        exit(1)
     }
     
     plistDict.removeValue(forKey: "SMPrivilegedExecutables")
@@ -318,40 +301,36 @@ func updateSMAuthorizedClients(
     assert(target == "helper")
     guard let prodBundleID = plistDict["CFBundleIdentifier"] as? String else
     {
-        print(
-            "error: Helper info property list, \(infoPListFile), is missing "
+        emitError(
+            "Helper info property list, \(infoPListFile), is missing "
             + "\"CFBundleIdentifier\" key, or it not a string"
         )
-        exit(1)
     }
     guard prodBundleID == bundleIdentifierHelper else
     {
-        print(
-            "error: Bundle id in info propery list, \(infoPListFile), does not"
+        emitError(
+            "Bundle id in info propery list, \(infoPListFile), does not"
             + " match HELPER_BUNDLE_ID\n"
             + "     plists CFBundleIdentifier = \(prodBundleID)\n"
             + "              HELPER_BUNDLE_ID = \(bundleIdentifierHelper)"
         )
-        exit(1)
     }
     
     guard let prodBundleName = plistDict["CFBundleName"] as? String else
     {
-        print(
-            "error: Helper info property list, \(infoPListFile), is missing "
+        emitError(
+            "Helper info property list, \(infoPListFile), is missing "
             + "\"CFBundleName\" key, or it not a string"
         )
-        exit(1)
     }
     guard prodBundleName == bundleIdentifierHelper else
     {
-        print(
-            "error: Bundle name in info propery list, \(infoPListFile), does "
+        emitError(
+            "Bundle name in info propery list, \(infoPListFile), does "
             + "not match HELPER_BUNDLE_ID\n"
             + "     plists CFBundleName = \(prodBundleName)\n"
             + "        HELPER_BUNDLE_ID = \(bundleIdentifierHelper)"
         )
-        exit(1)
     }
     
     plistDict.removeValue(forKey: "SMAuthorizedClients")
@@ -359,10 +338,8 @@ func updateSMAuthorizedClients(
     plistDict["SMAuthorizedClients"] = newClients as NSArray
 }
 
-guard let action = Environment["ACTION"] else
-{
-    print("error: ACTION environment variable not set")
-    exit(1)
+guard let action = Environment["ACTION"] else {
+    emitError("ACTION environment variable not set")
 }
 
 var appString = ""
@@ -407,8 +384,7 @@ switch action
         appendDeveloperID(to: &helperString)
 
     default:
-        print("error: Unknown Xcode Action: \(action)")
-        exit(1)
+        emitError("Unknown Xcode Action: \(action)")
 }
 
 if target == "helper" {
@@ -417,11 +393,7 @@ if target == "helper" {
 else if target == "application" {
     updateSMPriviledgedExecutables(in: &infoPlist, with: helperString)
 }
-else
-{
-    print("error: Unknown Target: \(target)")
-    exit(1)
-}
+else { emitError("Unknown Target: \(target)") }
 
 (infoPlist as NSDictionary).write(toFile: infoPListFile, atomically: true)
 
