@@ -105,13 +105,19 @@ func emitError(_ msg: String) -> Never
 }
 
 // -------------------------------------
+func environmentVarNotSet(_ variable: String, addHelp: Bool = false) -> Never
+{
+    let message = "\(variable) environment variable not set\n\(helpStr)"
+        + (addHelp ? "\n\(helpStr)" : "")
+    
+    emitError(message)
+}
+
+// -------------------------------------
 func getBundleIDFrom(_ environmentVariable: String) -> String
 {
-    guard let bundleID = Environment[environmentVariable] else
-    {
-        emitError(
-            "\(environmentVariable) environment variable not set\n\(helpStr)"
-        )
+    guard let bundleID = Environment[environmentVariable] else {
+        environmentVarNotSet(environmentVariable, addHelp: true)
     }
     
     let bundleIDChars = alphaNumericChars + ["."]
@@ -144,7 +150,7 @@ let bundleIdentifierApplication = getBundleIDFrom("MAIN_BUNDLE_ID")
 let bundleIdentifierHelper = getBundleIDFrom("HELPER_BUNDLE_ID")
 
 guard let infoPListFile = Environment["INFOPLIST_FILE"] else {
-    emitError("INFOPLIST_FILE environment variable not set")
+    environmentVarNotSet("INFOPLIST_FILE")
 }
 
 var infoPlist: [String: AnyObject] =
@@ -238,7 +244,7 @@ func appendHelperBundleIdentifier(to s: inout String) {
 func appendDeveloperID(to s: inout String)
 {
     guard let devTeamID = Environment["DEVELOPMENT_TEAM"] else {
-        emitError("DEVELOPMENT_TEAM environment variable not set")
+        environmentVarNotSet("DEVELOPMENT_TEAM")
     }
     
     guard isValidDeveloperID(devTeamID) else {
@@ -254,9 +260,7 @@ func appendMacDeveloper(to s: inout String)
     guard let macDeveloperCN = Environment["EXPANDED_CODE_SIGN_IDENTITY_NAME"]
     else
     {
-        emitError(
-            "EXPANDED_CODE_SIGN_IDENTITY_NAME environment variable not set"
-        )
+        environmentVarNotSet("EXPANDED_CODE_SIGN_IDENTITY_NAME")
     }
     
     guard isValidDeveloperCN(macDeveloperCN) else {
@@ -273,7 +277,7 @@ func updateSMPriviledgedExecutables(
 {
     assert(target == "application")
     guard let prodBundleID = Environment["PRODUCT_BUNDLE_IDENTIFIER"] else {
-        emitError("PRODUCT_BUNDLE_IDENTIFIER environment variable not set")
+        environmentVarNotSet("PRODUCT_BUNDLE_IDENTIFIER")
     }
     
     guard prodBundleID == bundleIdentifierApplication else
@@ -286,10 +290,7 @@ func updateSMPriviledgedExecutables(
     }
     
     plistDict.removeValue(forKey: "SMPrivilegedExecutables")
-    let newExecutables: [String: String] =
-    [
-        bundleIdentifierHelper: s
-    ]
+    let newExecutables: [String: String] = [bundleIdentifierHelper: s]
     plistDict["SMPrivilegedExecutables"] = newExecutables as NSDictionary
 }
 
@@ -339,7 +340,7 @@ func updateSMAuthorizedClients(
 }
 
 guard let action = Environment["ACTION"] else {
-    emitError("ACTION environment variable not set")
+    environmentVarNotSet("ACTION")
 }
 
 var appString = ""
