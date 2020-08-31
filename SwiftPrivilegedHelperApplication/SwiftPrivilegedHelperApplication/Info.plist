@@ -31,7 +31,7 @@
 	<key>SMPrivilegedExecutables</key>
 	<dict>
 		<key>com.github.erikberglund.SwiftPrivilegedHelper</key>
-		<string>identifier &quot;com.github.erikberglund.SwiftPrivilegedHelper&quot; and anchor apple generic and certificate leaf[subject.CN] = &quot;Mac Developer: Erik Berglund (BXUF2UUW7E)&quot; and certificate 1[field.1.2.840.113635.100.6.2.1] /* exists */</string>
+		<string>identifier "com.github.erikberglund.SwiftPrivilegedHelper" and anchor apple generic and certificate leaf[subject.CN] = "Mac Developer: Erik Berglund (BXUF2UUW7E)" and certificate 1[field.1.2.840.113635.100.6.2.1] /* exists */</string>
 	</dict>
 </dict>
 </plist>
