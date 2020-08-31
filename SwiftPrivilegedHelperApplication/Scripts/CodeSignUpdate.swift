@@ -356,7 +356,7 @@ switch action
         appendMacDeveloper(to: &appString)
         appString += " and "
         appendAppleMacDeveloper(to: &appString)
-        appString += "/* exists */"
+        appString += " /* exists */"
     
         appendHelperBundleIdentifier(to: &helperString)
         helperString += " and "
@@ -365,7 +365,7 @@ switch action
         appendMacDeveloper(to: &helperString)
         helperString += " and "
         appendAppleMacDeveloper(to: &helperString)
-        helperString += "/* exists */"
+        helperString += " /* exists */"
     
     case "install":
         appendAppleGeneric(to: &appString)
