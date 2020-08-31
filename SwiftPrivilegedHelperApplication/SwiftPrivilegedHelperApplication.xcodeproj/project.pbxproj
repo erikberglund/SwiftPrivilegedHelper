@@ -61,7 +61,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		532308F42163910700A456CF /* CodeSignUpdate.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = CodeSignUpdate.sh; sourceTree = "<group>"; };
+		4569C94524FB6F72005B473B /* CodeSignUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeSignUpdate.swift; sourceTree = "<group>"; };
+		4569C94624FB7175005B473B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		532308F92163A87600A456CF /* ExtensionsNSTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionsNSTextView.swift; sourceTree = "<group>"; };
 		53604C03215E12F300071149 /* SwiftPrivilegedHelperApplication.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftPrivilegedHelperApplication.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		53604C06215E12F300071149 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -102,7 +103,8 @@
 		532308F12163908D00A456CF /* Scripts */ = {
 			isa = PBXGroup;
 			children = (
-				532308F42163910700A456CF /* CodeSignUpdate.sh */,
+				4569C94524FB6F72005B473B /* CodeSignUpdate.swift */,
+				4569C94624FB7175005B473B /* README.md */,
 			);
 			path = Scripts;
 			sourceTree = "<group>";
@@ -219,11 +221,12 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1000;
-				LastUpgradeCheck = 1000;
+				LastUpgradeCheck = 1140;
 				ORGANIZATIONNAME = "Erik Berglund";
 				TargetAttributes = {
 					53604C02215E12F300071149 = {
 						CreatedOnToolsVersion = 10.0;
+						LastSwiftMigration = 1140;
 						SystemCapabilities = {
 							com.apple.Sandbox = {
 								enabled = 0;
@@ -232,6 +235,7 @@
 					};
 					53604C17215E131D00071149 = {
 						CreatedOnToolsVersion = 10.0;
+						LastSwiftMigration = 1140;
 					};
 				};
 			};
@@ -282,7 +286,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}\"/Scripts/CodeSignUpdate.sh\n";
+			shellScript = "export MAIN_BUNDLE_ID=\"com.github.erikberglund.SwiftPrivilegedHelperApplication\"\nexport HELPER_BUNDLE_ID=\"com.github.erikberglund.SwiftPrivilegedHelper\"\nswift \"${SRCROOT}\"/Scripts/CodeSignUpdate.swift\n";
 		};
 		5361D213216254BC0036E296 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -299,7 +303,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}\"/Scripts/CodeSignUpdate.sh\n";
+			shellScript = "export MAIN_BUNDLE_ID=\"com.github.erikberglund.SwiftPrivilegedHelperApplication\"\nexport HELPER_BUNDLE_ID=\"com.github.erikberglund.SwiftPrivilegedHelper\"\nswift \"${SRCROOT}\"/Scripts/CodeSignUpdate.swift\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -485,7 +489,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				PRODUCT_BUNDLE_IDENTIFIER = com.github.erikberglund.SwiftPrivilegedHelperApplication;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -504,7 +508,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				PRODUCT_BUNDLE_IDENTIFIER = com.github.erikberglund.SwiftPrivilegedHelperApplication;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -528,7 +532,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.github.erikberglund.SwiftPrivilegedHelper;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -552,7 +556,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.github.erikberglund.SwiftPrivilegedHelper;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
