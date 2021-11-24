@@ -200,10 +200,12 @@ func isValidDeveloperCN(_ s: String) -> Bool
 {
     let appleDeveloper = "Apple Development:"
     let macDeveloper = "Mac Developer:"
+    let customDeveloper = "Developer ID Application:"
     
     if isValidDeveloperCN(s, withPrefix: appleDeveloper) { return true }
     if isValidDeveloperCN(s, withPrefix: macDeveloper) { return true }
-    
+    if isValidDeveloperCN(s, withPrefix: customDeveloper) { return true }
+
     return false
 }
 
@@ -377,11 +379,11 @@ switch action
         appendDeveloperID(to: &appString)
     
         appendAppleGeneric(to: &helperString)
-        appString += " and "
+        helperString += " and "
         appendHelperBundleIdentifier(to: &helperString)
-        appString += " and "
+        helperString += " and "
         appendAppleDeveloperID(to: &helperString)
-        appString += " and "
+        helperString += " and "
         appendDeveloperID(to: &helperString)
 
     default:
