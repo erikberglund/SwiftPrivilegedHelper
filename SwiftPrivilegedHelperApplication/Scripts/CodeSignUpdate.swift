@@ -200,13 +200,25 @@ func isValidDeveloperCN(_ s: String) -> Bool
 {
     let appleDeveloper = "Apple Development:"
     let macDeveloper = "Mac Developer:"
-    let customDeveloper = "Developer ID Application:"
     
     if isValidDeveloperCN(s, withPrefix: appleDeveloper) { return true }
     if isValidDeveloperCN(s, withPrefix: macDeveloper) { return true }
-    if isValidDeveloperCN(s, withPrefix: customDeveloper) { return true }
 
     return false
+}
+
+// -------------------------------------
+func isDeveloperIDCN() -> Bool
+{
+    guard let macDeveloperCN = Environment["EXPANDED_CODE_SIGN_IDENTITY_NAME"]
+    else
+    {
+        environmentVarNotSet("EXPANDED_CODE_SIGN_IDENTITY_NAME")
+    }
+
+    let developerID = "Developer ID Application:"
+
+    return isValidDeveloperCN(macDeveloperCN, withPrefix: developerID)
 }
 
 // -------------------------------------
@@ -341,53 +353,44 @@ func updateSMAuthorizedClients(
     plistDict["SMAuthorizedClients"] = newClients as NSArray
 }
 
-guard let action = Environment["ACTION"] else {
-    environmentVarNotSet("ACTION")
-}
-
 var appString = ""
 var helperString = ""
 
-switch action
-{
-    case "build":
-        appendApplicationBundleIdentifier(to: &appString)
-        appString += " and "
-        appendAppleGeneric(to: &appString)
-        appString += " and "
-        appendMacDeveloper(to: &appString)
-        appString += " and "
-        appendAppleMacDeveloper(to: &appString)
-        appString += " /* exists */"
-    
-        appendHelperBundleIdentifier(to: &helperString)
-        helperString += " and "
-        appendAppleGeneric(to: &helperString)
-        helperString += " and "
-        appendMacDeveloper(to: &helperString)
-        helperString += " and "
-        appendAppleMacDeveloper(to: &helperString)
-        helperString += " /* exists */"
-    
-    case "install":
-        appendAppleGeneric(to: &appString)
-        appString += " and "
-        appendApplicationBundleIdentifier(to: &appString)
-        appString += " and "
-        appendAppleDeveloperID(to: &appString)
-        appString += " and "
-        appendDeveloperID(to: &appString)
-    
-        appendAppleGeneric(to: &helperString)
-        helperString += " and "
-        appendHelperBundleIdentifier(to: &helperString)
-        helperString += " and "
-        appendAppleDeveloperID(to: &helperString)
-        helperString += " and "
-        appendDeveloperID(to: &helperString)
+if (isDeveloperIDCN()) {
+    appendAppleGeneric(to: &appString)
+    appString += " and "
+    appendApplicationBundleIdentifier(to: &appString)
+    appString += " and "
+    appendAppleDeveloperID(to: &appString)
+    appString += " and "
+    appendDeveloperID(to: &appString)
 
-    default:
-        emitError("Unknown Xcode Action: \(action)")
+    appendAppleGeneric(to: &helperString)
+    helperString += " and "
+    appendHelperBundleIdentifier(to: &helperString)
+    helperString += " and "
+    appendAppleDeveloperID(to: &helperString)
+    helperString += " and "
+    appendDeveloperID(to: &helperString)
+}
+else {
+    appendApplicationBundleIdentifier(to: &appString)
+    appString += " and "
+    appendAppleGeneric(to: &appString)
+    appString += " and "
+    appendMacDeveloper(to: &appString)
+    appString += " and "
+    appendAppleMacDeveloper(to: &appString)
+    appString += " /* exists */"
+
+    appendHelperBundleIdentifier(to: &helperString)
+    helperString += " and "
+    appendAppleGeneric(to: &helperString)
+    helperString += " and "
+    appendMacDeveloper(to: &helperString)
+    helperString += " and "
+    appendAppleMacDeveloper(to: &helperString)
+    helperString += " /* exists */"
 }
 
 if target == "helper" {
