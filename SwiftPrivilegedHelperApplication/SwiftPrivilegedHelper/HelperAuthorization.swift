@@ -10,6 +10,14 @@ import Foundation
 
 enum HelperAuthorizationError: Error {
     case message(String)
+    
+    init(authorizationError: OSStatus)
+    {
+        self = .message(
+            SecCopyErrorMessageString(authorizationError, nil) as String?
+                ?? "Unknown error"
+        )
+    }
 }
 
 class HelperAuthorization {

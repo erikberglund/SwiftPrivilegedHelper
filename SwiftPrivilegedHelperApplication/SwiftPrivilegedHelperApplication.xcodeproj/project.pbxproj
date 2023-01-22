@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		45D3E674297CBCB100E6E569 /* HelperToolController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D3E673297CBCB100E6E569 /* HelperToolController.swift */; };
 		532308FA2163A87600A456CF /* ExtensionsNSTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 532308F92163A87600A456CF /* ExtensionsNSTextView.swift */; };
 		5332883321660B2400028C27 /* HelperAuthorization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53EE3960215E3068007310F5 /* HelperAuthorization.swift */; };
 		5332883421660D7A00028C27 /* HelperAuthorizationRight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53EE3964215E3A85007310F5 /* HelperAuthorizationRight.swift */; };
@@ -18,8 +19,8 @@
 		53604C20215E134500071149 /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53604C1F215E134500071149 /* Helper.swift */; };
 		53604C22215E13E200071149 /* HelperConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53604C21215E13E200071149 /* HelperConstants.swift */; };
 		53604C26215E185D00071149 /* HelperProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53604C25215E185D00071149 /* HelperProtocol.swift */; };
-		53604C2A215E1B0100071149 /* AppProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53604C29215E1B0100071149 /* AppProtocol.swift */; };
-		53604C2C215E1C2700071149 /* AppProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53604C29215E1B0100071149 /* AppProtocol.swift */; };
+		53604C2A215E1B0100071149 /* HelperToolControllerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53604C29215E1B0100071149 /* HelperToolControllerProtocol.swift */; };
+		53604C2C215E1C2700071149 /* HelperToolControllerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53604C29215E1B0100071149 /* HelperToolControllerProtocol.swift */; };
 		53604C2E215E1CFB00071149 /* com.github.erikberglund.SwiftPrivilegedHelper in Copy Helper */ = {isa = PBXBuildFile; fileRef = 53604C18215E131D00071149 /* com.github.erikberglund.SwiftPrivilegedHelper */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		53C6B95E216767F0001A80FD /* CodesignCheck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53C6B95921676219001A80FD /* CodesignCheck.swift */; };
 		53EE395F215E2631007310F5 /* HelperProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53604C25215E185D00071149 /* HelperProtocol.swift */; };
@@ -63,6 +64,7 @@
 /* Begin PBXFileReference section */
 		4569C94524FB6F72005B473B /* CodeSignUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeSignUpdate.swift; sourceTree = "<group>"; };
 		4569C94624FB7175005B473B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		45D3E673297CBCB100E6E569 /* HelperToolController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelperToolController.swift; sourceTree = "<group>"; };
 		532308F92163A87600A456CF /* ExtensionsNSTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionsNSTextView.swift; sourceTree = "<group>"; };
 		53604C03215E12F300071149 /* SwiftPrivilegedHelperApplication.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftPrivilegedHelperApplication.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		53604C06215E12F300071149 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -76,7 +78,7 @@
 		53604C23215E14C900071149 /* Helper-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Helper-Info.plist"; sourceTree = "<group>"; };
 		53604C24215E150C00071149 /* Helper-Launchd.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Helper-Launchd.plist"; sourceTree = "<group>"; };
 		53604C25215E185D00071149 /* HelperProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelperProtocol.swift; sourceTree = "<group>"; };
-		53604C29215E1B0100071149 /* AppProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppProtocol.swift; sourceTree = "<group>"; };
+		53604C29215E1B0100071149 /* HelperToolControllerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelperToolControllerProtocol.swift; sourceTree = "<group>"; };
 		53C6B95921676219001A80FD /* CodesignCheck.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CodesignCheck.swift; sourceTree = "<group>"; };
 		53EE3960215E3068007310F5 /* HelperAuthorization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelperAuthorization.swift; sourceTree = "<group>"; };
 		53EE3964215E3A85007310F5 /* HelperAuthorizationRight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelperAuthorizationRight.swift; sourceTree = "<group>"; };
@@ -134,10 +136,11 @@
 			isa = PBXGroup;
 			children = (
 				53604C06215E12F300071149 /* AppDelegate.swift */,
-				53604C29215E1B0100071149 /* AppProtocol.swift */,
+				53604C29215E1B0100071149 /* HelperToolControllerProtocol.swift */,
 				53604C08215E12F400071149 /* Assets.xcassets */,
 				53604C0A215E12F400071149 /* MainMenu.xib */,
 				53604C0D215E12F400071149 /* Info.plist */,
+				45D3E673297CBCB100E6E569 /* HelperToolController.swift */,
 			);
 			path = SwiftPrivilegedHelperApplication;
 			sourceTree = "<group>";
@@ -314,11 +317,12 @@
 			files = (
 				53604C07215E12F300071149 /* AppDelegate.swift in Sources */,
 				535731AF215E1E5A009FDE00 /* HelperConstants.swift in Sources */,
-				53604C2A215E1B0100071149 /* AppProtocol.swift in Sources */,
+				53604C2A215E1B0100071149 /* HelperToolControllerProtocol.swift in Sources */,
 				53EE395F215E2631007310F5 /* HelperProtocol.swift in Sources */,
 				53EE3965215E3A85007310F5 /* HelperAuthorizationRight.swift in Sources */,
 				532308FA2163A87600A456CF /* ExtensionsNSTextView.swift in Sources */,
 				53EE3961215E3068007310F5 /* HelperAuthorization.swift in Sources */,
+				45D3E674297CBCB100E6E569 /* HelperToolController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -327,7 +331,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				53C6B95E216767F0001A80FD /* CodesignCheck.swift in Sources */,
-				53604C2C215E1C2700071149 /* AppProtocol.swift in Sources */,
+				53604C2C215E1C2700071149 /* HelperToolControllerProtocol.swift in Sources */,
 				53604C1B215E131E00071149 /* main.swift in Sources */,
 				53604C26215E185D00071149 /* HelperProtocol.swift in Sources */,
 				53604C22215E13E200071149 /* HelperConstants.swift in Sources */,

@@ -7,10 +7,9 @@
 //
 
 import Cocoa
-import ServiceManagement
 
 @NSApplicationMain
-class AppDelegate: NSObject, NSApplicationDelegate, AppProtocol {
+class AppDelegate: NSObject, NSApplicationDelegate {
 
     // MARK: -
     // MARK: IBOutlets
@@ -32,8 +31,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, AppProtocol {
 
     // MARK: -
     // MARK: Variables
-
-    private var currentHelperConnection: NSXPCConnection?
 
     @objc dynamic private var currentHelperAuthData: NSData?
     private let currentHelperAuthDataKeyPath: String
@@ -73,22 +70,34 @@ class AppDelegate: NSObject, NSApplicationDelegate, AppProtocol {
         self.configureBindings()
     }
 
-    func applicationDidFinishLaunching(_ aNotification: Notification) {
-
-        // Update the current authorization database right
-        // This will prmpt the user for authentication if something needs updating.
-
+    var helperToolController: HelperToolController! = nil
+    
+    func applicationDidFinishLaunching(_ aNotification: Notification)
+    {
         do {
-            try HelperAuthorization.authorizationRightsUpdateDatabase()
-        } catch {
-            self.textViewOutput.appendText("Failed to update the authorization database rights with error: \(error)")
+            helperToolController = try HelperToolController(
+                toolName: HelperConstants.machServiceName
+            )
+            helperToolController.logStdOut = {
+                self.textViewOutput.appendText($0)
+            }
+            helperToolController.logStdErr = {
+                self.textViewOutput.appendText($0)
+            }
+        }
+        catch {
+            self.textViewOutput.appendText(error.localizedDescription)
         }
 
         // Check if the current embedded helper tool is installed on the machine.
 
-        self.helperStatus { installed in
-            OperationQueue.main.addOperation {
-                self.textFieldHelperInstalled.stringValue = (installed) ? "Yes" : "No"
+        self.helperToolController.helperStatus
+        { installed in
+            DispatchQueue.main.async
+            {
+                self.textFieldHelperInstalled.stringValue = (installed)
+                    ? "Yes"
+                    : "No"
                 self.setValue(installed, forKey: self.helperIsInstalledKeyPath)
             }
         }
@@ -119,27 +128,69 @@ class AppDelegate: NSObject, NSApplicationDelegate, AppProtocol {
 
     @IBAction func buttonInstallHelper(_ sender: Any) {
         do {
-            if try self.helperInstall() {
-                OperationQueue.main.addOperation {
-                    self.textViewOutput.appendText("Helper installed successfully.")
+            if try self.helperToolController.install()
+            {
+                DispatchQueue.main.async
+                {
+                    self.textViewOutput.appendText(
+                        "Helper installed successfully."
+                    )
                     self.textFieldHelperInstalled.stringValue = "Yes"
                     self.setValue(true, forKey: self.helperIsInstalledKeyPath)
                 }
                 return
-            } else {
-                OperationQueue.main.addOperation {
+            }
+            else
+            {
+                DispatchQueue.main.async
+                {
                     self.textFieldHelperInstalled.stringValue = "No"
-                    self.textViewOutput.appendText("Failed install helper with unknown error.")
+                    self.textViewOutput.appendText(
+                        "Failed install helper with unknown error."
+                    )
                 }
             }
-        } catch {
-            OperationQueue.main.addOperation {
-                self.textViewOutput.appendText("Failed to install helper with error: \(error)")
+        }
+        catch
+        {
+            DispatchQueue.main.async
+            {
+                self.textViewOutput.appendText(
+                    "Failed to install helper with error: \(error)"
+                )
             }
         }
-        OperationQueue.main.addOperation {
+        DispatchQueue.main.async
+        {
             self.textFieldHelperInstalled.stringValue = "No"
             self.setValue(false, forKey: self.helperIsInstalledKeyPath)
+        }
+    }
+    
+    private func runAuthorizedCommand(inputPath: String) throws
+    {
+        try helperToolController.withAuthorizedHelper(
+            cachedAuthentication: self.currentHelperAuthData)
+        { helper, authData in
+            helper.runCommandLs(withPath: inputPath, authData: authData)
+            { (exitCode) in
+                DispatchQueue.main.async
+                {
+                    // Verify that authentication was successful
+                    guard exitCode != kAuthorizationFailedExitCode else {
+                        self.textViewOutput.appendText("Authentication Failed")
+                        return
+                    }
+
+                    self.textViewOutput.appendText("Command exit code: \(exitCode)")
+                    if self.checkboxCacheAuthentication.state == .on, self.currentHelperAuthData == nil
+                    {
+                        self.currentHelperAuthData = authData
+                        self.textFieldAuthorizationCached.stringValue = "Yes"
+                        self.buttonDestroyCachedAuthorization.isEnabled = true
+                    }
+                }
+            }
         }
     }
 
@@ -152,138 +203,20 @@ class AppDelegate: NSObject, NSApplicationDelegate, AppProtocol {
     @IBAction func buttonRunCommand(_ sender: Any) {
         guard
             let inputPath = self.inputPath,
-            let helper = self.helper(nil) else { return }
+            let helper = self.helperToolController.helper(nil)
+        else { return }
 
-        if self.checkboxRequireAuthentication.state == .on {
-            do {
-                guard let authData = try self.currentHelperAuthData ?? HelperAuthorization.emptyAuthorizationExternalFormData() else {
-                    self.textViewOutput.appendText("Failed to get the empty authorization external form")
-                    return
-                }
-
-                helper.runCommandLs(withPath: inputPath, authData: authData) { (exitCode) in
-                    OperationQueue.main.addOperation {
-
-                        // Verify that authentication was successful
-
-                        guard exitCode != kAuthorizationFailedExitCode else {
-                            self.textViewOutput.appendText("Authentication Failed")
-                            return
-                        }
-
-                        self.textViewOutput.appendText("Command exit code: \(exitCode)")
-                        if self.checkboxCacheAuthentication.state == .on, self.currentHelperAuthData == nil {
-                            self.currentHelperAuthData = authData
-                            self.textFieldAuthorizationCached.stringValue = "Yes"
-                            self.buttonDestroyCachedAuthorization.isEnabled = true
-                        }
-
-                    }
-                }
-            } catch {
-                self.textViewOutput.appendText("Command failed with error: \(error)")
+        if self.checkboxRequireAuthentication.state == .on
+        {
+            do { try runAuthorizedCommand(inputPath: inputPath) }
+            catch {
+                self.textViewOutput.appendText(
+                    "Command failed with error: \(error)"
+                )
             }
         } else {
             helper.runCommandLs(withPath: inputPath) { (exitCode) in
                 self.textViewOutput.appendText("Command exit code: \(exitCode)")
-            }
-        }
-    }
-
-    // MARK: -
-    // MARK: AppProtocol Methods
-
-    func log(stdOut: String) {
-        guard !stdOut.isEmpty else { return }
-        OperationQueue.main.addOperation {
-            self.textViewOutput.appendText(stdOut)
-        }
-    }
-
-    func log(stdErr: String) {
-        guard !stdErr.isEmpty else { return }
-        OperationQueue.main.addOperation {
-            self.textViewOutput.appendText(stdErr)
-        }
-    }
-
-    // MARK: -
-    // MARK: Helper Connection Methods
-
-    func helperConnection() -> NSXPCConnection? {
-        guard self.currentHelperConnection == nil else {
-            return self.currentHelperConnection
-        }
-
-        let connection = NSXPCConnection(machServiceName: HelperConstants.machServiceName, options: .privileged)
-        connection.exportedInterface = NSXPCInterface(with: AppProtocol.self)
-        connection.exportedObject = self
-        connection.remoteObjectInterface = NSXPCInterface(with: HelperProtocol.self)
-        connection.invalidationHandler = {
-            self.currentHelperConnection?.invalidationHandler = nil
-            OperationQueue.main.addOperation {
-                self.currentHelperConnection = nil
-            }
-        }
-
-        self.currentHelperConnection = connection
-        self.currentHelperConnection?.resume()
-
-        return self.currentHelperConnection
-    }
-
-    func helper(_ completion: ((Bool) -> Void)?) -> HelperProtocol? {
-
-        // Get the current helper connection and return the remote object (Helper.swift) as a proxy object to call functions on.
-
-        guard let helper = self.helperConnection()?.remoteObjectProxyWithErrorHandler({ error in
-            self.textViewOutput.appendText("Helper connection was closed with error: \(error)")
-            if let onCompletion = completion { onCompletion(false) }
-        }) as? HelperProtocol else { return nil }
-        return helper
-    }
-
-    func helperStatus(completion: @escaping (_ installed: Bool) -> Void) {
-
-        // Comppare the CFBundleShortVersionString from the Info.plist in the helper inside our application bundle with the one on disk.
-
-        let helperURL = Bundle.main.bundleURL.appendingPathComponent("Contents/Library/LaunchServices/" + HelperConstants.machServiceName)
-        guard
-            let helperBundleInfo = CFBundleCopyInfoDictionaryForURL(helperURL as CFURL) as? [String: Any],
-            let helperVersion = helperBundleInfo["CFBundleShortVersionString"] as? String,
-            let helper = self.helper(completion) else {
-                completion(false)
-                return
-        }
-
-        helper.getVersion { installedHelperVersion in
-            completion(installedHelperVersion == helperVersion)
-        }
-    }
-
-    func helperInstall() throws -> Bool {
-
-        // Install and activate the helper inside our application bundle to disk.
-
-        var cfError: Unmanaged<CFError>?
-        return try kSMRightBlessPrivilegedHelper.withCString
-        {
-            var authItem = AuthorizationItem(name: $0, valueLength: 0, value:UnsafeMutableRawPointer(bitPattern: 0), flags: 0)
-            return try withUnsafeMutablePointer(to: &authItem)
-            {
-                var authRights = AuthorizationRights(count: 1, items: $0)
-
-                guard
-                    let authRef = try HelperAuthorization.authorizationRef(&authRights, nil, [.interactionAllowed, .extendRights, .preAuthorize]),
-                    SMJobBless(kSMDomainSystemLaunchd, HelperConstants.machServiceName as CFString, authRef, &cfError) else {
-                        if let error = cfError?.takeRetainedValue() { throw error }
-                        return false
-                }
-
-                self.currentHelperConnection?.invalidate()
-                self.currentHelperConnection = nil
-
-                return true
             }
         }
     }

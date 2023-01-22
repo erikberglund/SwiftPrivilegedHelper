@@ -53,7 +53,8 @@ class Helper: NSObject, NSXPCListenerDelegate, HelperProtocol {
         }
 
         // Set the protocol that the calling application conforms to.
-        connection.remoteObjectInterface = NSXPCInterface(with: AppProtocol.self)
+        connection.remoteObjectInterface =
+            NSXPCInterface(with: HelperToolControllerProtocol.self)
 
         // Set the protocol that the helper conforms to.
         connection.exportedInterface = NSXPCInterface(with: HelperProtocol.self)
@@ -121,7 +122,7 @@ class Helper: NSObject, NSXPCListenerDelegate, HelperProtocol {
         do {
             try HelperAuthorization.verifyAuthorization(authData, forCommand: command)
         } catch {
-            if let remoteObject = self.connection()?.remoteObjectProxy as? AppProtocol {
+            if let remoteObject = self.connection()?.remoteObjectProxy as? HelperToolControllerProtocol {
                 remoteObject.log(stdErr: "Authentication Error: \(error)")
             }
             return false
@@ -140,7 +141,7 @@ class Helper: NSObject, NSXPCListenerDelegate, HelperProtocol {
         let stdOutHandler =  { (file: FileHandle!) -> Void in
             let data = file.availableData
             guard let output = NSString(data: data, encoding: String.Encoding.utf8.rawValue) else { return }
-            if let remoteObject = self.connection()?.remoteObjectProxy as? AppProtocol {
+            if let remoteObject = self.connection()?.remoteObjectProxy as? HelperToolControllerProtocol {
                 remoteObject.log(stdOut: output as String)
             }
         }
@@ -150,7 +151,7 @@ class Helper: NSObject, NSXPCListenerDelegate, HelperProtocol {
         let stdErrHandler =  { (file: FileHandle!) -> Void in
             let data = file.availableData
             guard let output = NSString(data: data, encoding: String.Encoding.utf8.rawValue) else { return }
-            if let remoteObject = self.connection()?.remoteObjectProxy as? AppProtocol {
+            if let remoteObject = self.connection()?.remoteObjectProxy as? HelperToolControllerProtocol {
                 remoteObject.log(stdErr: output as String)
             }
         }
