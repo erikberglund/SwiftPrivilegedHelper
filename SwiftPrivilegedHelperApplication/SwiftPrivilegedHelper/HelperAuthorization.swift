@@ -21,6 +21,23 @@ enum HelperAuthorizationError: Error {
 }
 
 class HelperAuthorization {
+    
+    static func makeRight(
+        command: Selector,
+        description: String) -> HelperAuthorizationRight
+    {
+        let customRule: [String: Any] = [
+            kAuthorizationRightKeyClass: "user",
+            kAuthorizationRightKeyGroup: "admin",
+            kAuthorizationRightKeyVersion: 1
+        ]
+        
+        return HelperAuthorizationRight(
+            command: command,
+            description: description,
+            ruleCustom: customRule
+        )
+    }
 
     // MARK: -
     // MARK: Variables
@@ -28,9 +45,14 @@ class HelperAuthorization {
     // FIXME: Add all functions that require authentication here.
 
     static let authorizationRights = [
-        HelperAuthorizationRight(command: #selector(HelperProtocol.runCommandLs(withPath:authData:completion:)),
-                                 description: "SwiftPrivilegedHelper wants to run the command /bin/ls",
-                                 ruleCustom: [kAuthorizationRightKeyClass: "user", kAuthorizationRightKeyGroup: "admin", kAuthorizationRightKeyVersion: 1])
+        makeRight(
+            command: #selector(HelperProtocol.runCommandLs(withPath:authData:completion:)),
+            description: "SwiftPrivilegedHelper wants to run the command /bin/ls"
+        ),
+        makeRight(
+            command: #selector(HelperProtocol.runCommandUninstall(authData:completion:)),
+            description: "SwiftPrivilegedHelper wants to uninstall helper tool"
+        ),
     ]
 
     // MARK: -

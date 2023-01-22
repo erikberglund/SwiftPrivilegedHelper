@@ -36,7 +36,21 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private let currentHelperAuthDataKeyPath: String
 
     @objc dynamic private var helperIsInstalled = false
+    {
+        didSet
+        {
+            self.buttonInstallHelper?.title = helperIsInstalled
+                ? "Uninstall Helper"
+                : "Install Helper"
+        }
+    }
     private let helperIsInstalledKeyPath: String
+    
+    @objc dynamic var installButtonTitle: String {
+        helperIsInstalled ? "Uninstall Helper" : "Install Helper"
+    }
+    private let installButtonTitleKeyPath: String
+
 
     // MARK: -
     // MARK: Computed Variables
@@ -63,6 +77,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     override init() {
         self.currentHelperAuthDataKeyPath = NSStringFromSelector(#selector(getter: self.currentHelperAuthData))
         self.helperIsInstalledKeyPath = NSStringFromSelector(#selector(getter: self.helperIsInstalled))
+        self.installButtonTitleKeyPath = NSStringFromSelector(#selector(getter: self.installButtonTitle))
         super.init()
     }
 
@@ -73,6 +88,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var helperToolController: HelperToolController! = nil
     
     func applicationDidFinishLaunching(_ aNotification: Notification)
+    {
+        resetHelperToolController()
+
+        // Check if the current embedded helper tool is installed on the machine.
+        updateHelperStatus()
+    }
+    
+    private func resetHelperToolController()
     {
         do {
             helperToolController = try HelperToolController(
@@ -88,9 +111,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         catch {
             self.textViewOutput.appendText(error.localizedDescription)
         }
-
-        // Check if the current embedded helper tool is installed on the machine.
-
+    }
+    
+    private func updateHelperStatus()
+    {
         self.helperToolController.helperStatus
         { installed in
             DispatchQueue.main.async
@@ -105,21 +129,25 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     // MARK: -
     // MARK: Initialization
-
+    
     func configureBindings() {
 
         // Button: Install Helper
-        self.buttonInstallHelper.bind(.enabled,
-                                      to: self,
-                                      withKeyPath: self.helperIsInstalledKeyPath,
-                                      options: [.continuouslyUpdatesValue: true,
-                                                .valueTransformerName: NSValueTransformerName.negateBooleanTransformerName])
+        self.buttonInstallHelper.isEnabled = true
+        self.buttonInstallHelper.bind(
+            .title,
+            to: self,
+            withKeyPath: self.installButtonTitleKeyPath,
+            options: [.continuouslyUpdatesValue: true]
+        )
 
         // Button: Run Command
-        self.buttonRunCommand.bind(.enabled,
-                                   to: self,
-                                   withKeyPath: self.helperIsInstalledKeyPath,
-                                   options: [.continuouslyUpdatesValue: true])
+        self.buttonRunCommand.bind(
+            .enabled,
+            to: self,
+            withKeyPath: self.helperIsInstalledKeyPath,
+            options: [.continuouslyUpdatesValue: true]
+        )
 
     }
 
@@ -128,28 +156,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     @IBAction func buttonInstallHelper(_ sender: Any) {
         do {
-            if try self.helperToolController.install()
-            {
-                DispatchQueue.main.async
-                {
-                    self.textViewOutput.appendText(
-                        "Helper installed successfully."
-                    )
-                    self.textFieldHelperInstalled.stringValue = "Yes"
-                    self.setValue(true, forKey: self.helperIsInstalledKeyPath)
-                }
+            if helperIsInstalled {
+                try uninstallHelper()
                 return
             }
-            else
-            {
-                DispatchQueue.main.async
-                {
-                    self.textFieldHelperInstalled.stringValue = "No"
-                    self.textViewOutput.appendText(
-                        "Failed install helper with unknown error."
-                    )
-                }
-            }
+            else if try installHelper()  { return }
         }
         catch
         {
@@ -164,6 +175,58 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         {
             self.textFieldHelperInstalled.stringValue = "No"
             self.setValue(false, forKey: self.helperIsInstalledKeyPath)
+        }
+    }
+    
+    private func installHelper() throws -> Bool
+    {
+        if try self.helperToolController.install()
+        {
+            DispatchQueue.main.async
+            {
+                self.textViewOutput.appendText(
+                    "Helper installed successfully."
+                )
+                self.textFieldHelperInstalled.stringValue = "Yes"
+                self.setValue(true, forKey: self.helperIsInstalledKeyPath)
+            }
+            return true
+        }
+
+        DispatchQueue.main.async
+        {
+            self.textFieldHelperInstalled.stringValue = "No"
+            self.textViewOutput.appendText(
+                "Failed install helper with unknown error."
+            )
+        }
+        return false
+    }
+    
+    private func uninstallHelper() throws
+    {
+        try helperToolController.withAuthorizedHelper(
+            cachedAuthentication: nil)
+        { helper, authData in
+            helper.runCommandUninstall(authData: authData)
+            { exitCode in
+                DispatchQueue.main.async
+                {
+                    guard exitCode != kAuthorizationFailedExitCode else {
+                        self.textViewOutput.appendText("Authentication Failed")
+                        return
+                    }
+                    
+                    if exitCode == 0
+                    {
+                        self.currentHelperAuthData = nil
+                        self.textFieldAuthorizationCached.stringValue = "No"
+                        self.buttonDestroyCachedAuthorization.isEnabled = false
+                        self.helperIsInstalled = false
+                    }
+                    self.textViewOutput.appendText("Uninstall exit code: \(exitCode)")
+                }
+            }
         }
     }
     

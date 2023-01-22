@@ -206,7 +206,11 @@ class HelperToolController: NSObject, HelperToolControllerProtocol
         guard !s.isEmpty else { return }
         DispatchQueue.main.async
         {
-            if let logger = self.logStdOut {
+            if let logger = self.logStdOut
+            {
+                #if DEBUG
+                print(s)
+                #endif
                 logger(s)
             }
             else { print(s) }
@@ -219,7 +223,11 @@ class HelperToolController: NSObject, HelperToolControllerProtocol
         guard !s.isEmpty else { return }
         DispatchQueue.main.async
         {
-            if let logger = self.logStdErr {
+            if let logger = self.logStdErr
+            {
+                #if DEBUG
+                print(s)
+                #endif
                 logger(s)
             }
             else { print(s) }
