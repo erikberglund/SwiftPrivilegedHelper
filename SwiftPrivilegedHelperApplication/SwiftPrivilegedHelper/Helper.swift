@@ -53,7 +53,8 @@ class Helper: NSObject, NSXPCListenerDelegate, HelperProtocol {
         }
 
         // Set the protocol that the calling application conforms to.
-        connection.remoteObjectInterface = NSXPCInterface(with: AppProtocol.self)
+        connection.remoteObjectInterface =
+            NSXPCInterface(with: HelperToolControllerProtocol.self)
 
         // Set the protocol that the helper conforms to.
         connection.exportedInterface = NSXPCInterface(with: HelperProtocol.self)
@@ -82,8 +83,29 @@ class Helper: NSObject, NSXPCListenerDelegate, HelperProtocol {
     func getVersion(completion: (String) -> Void) {
         completion(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0")
     }
+    
+    func withAuthorization(
+        authData: NSData?,
+        forCommand selector: Selector,
+        completion: (NSNumber) -> Void,
+        doCommand command:() -> Void)
+    {
+        /*
+         Check the passed authorization, if the user need to authenticate to
+         use this command the user might be prompted depending on the settings
+         and/or cached authentication.
+         */
+        guard self.verifyAuthorization(authData, forCommand: selector) else {
+            completion(kAuthorizationFailedExitCode)
+            return
+        }
 
-    func runCommandLs(withPath path: String, completion: @escaping (NSNumber) -> Void) {
+        command()
+    }
+
+    func runCommandLs(
+        withPath path: String,
+        completion: @escaping (NSNumber) -> Void) {
 
         // For security reasons, all commands should be hardcoded in the helper
         let command = "/bin/ls"
@@ -93,16 +115,76 @@ class Helper: NSObject, NSXPCListenerDelegate, HelperProtocol {
         self.runTask(command: command, arguments: arguments, completion: completion)
     }
 
-    func runCommandLs(withPath path: String, authData: NSData?, completion: @escaping (NSNumber) -> Void) {
-
-        // Check the passed authorization, if the user need to authenticate to use this command the user might be prompted depending on the settings and/or cached authentication.
-
-        guard self.verifyAuthorization(authData, forCommand: #selector(HelperProtocol.runCommandLs(withPath:authData:completion:))) else {
-            completion(kAuthorizationFailedExitCode)
-            return
+    let lsSelector =
+        #selector(HelperProtocol.runCommandLs(withPath:authData:completion:))
+    func runCommandLs(
+        withPath path: String,
+        authData: NSData?,
+        completion: @escaping (NSNumber) -> Void)
+    {
+        withAuthorization(
+            authData: authData,
+            forCommand: lsSelector,
+            completion: completion)
+        {
+            self.runCommandLs(withPath: path, completion: completion)
         }
+    }
+    
+    let launchDaemonsURL = URL(
+        fileURLWithPath: "/Library/LaunchDaemons",
+        isDirectory: true
+    )
+    let uninstallSelector =
+        #selector(HelperProtocol.runCommandUninstall(authData:completion:))
+    func runCommandUninstall(completion: @escaping (NSNumber) -> Void)
+    {
+        let exectablePath = ProcessInfo.processInfo.arguments[0]
+        let plistName =
+            URL(fileURLWithPath: exectablePath).lastPathComponent + ".plist"
+        let plistURL = launchDaemonsURL.appendingPathComponent(plistName)
+        let executableURL = URL(fileURLWithPath: exectablePath)
+        
+        let fm = FileManager.default
+        trace("Deleting \(executableURL.path)")
+        let execRemoved = removeFile(executableURL, with: fm)
+        trace("Deleting \(plistURL.path)")
+        let plistRemoved = removeFile(plistURL, with: fm)
+        
 
-        self.runCommandLs(withPath: path, completion: completion)
+        let exitCode = execRemoved && plistRemoved ? 0 : -1
+        completion(exitCode as NSNumber)
+        
+        trace("Qutting helper tool")
+        shouldQuit = true
+    }
+    
+    private func removeFile(_ url: URL, with fm: FileManager) -> Bool
+    {
+        do { try fm.removeItem(at: url) }
+        catch
+        {
+            log(
+                stdErr: "Failed to remove helper at \(url.path) with "
+                    + "error: \(error)"
+            )
+            return false
+        }
+        
+        return true
+    }
+    
+    func runCommandUninstall(
+        authData: NSData?,
+        completion: @escaping (NSNumber) -> Void)
+    {
+        withAuthorization(
+            authData: authData,
+            forCommand: uninstallSelector,
+            completion: completion)
+        {
+            self.runCommandUninstall(completion: completion)
+        }
     }
 
     // MARK: -
@@ -121,9 +203,7 @@ class Helper: NSObject, NSXPCListenerDelegate, HelperProtocol {
         do {
             try HelperAuthorization.verifyAuthorization(authData, forCommand: command)
         } catch {
-            if let remoteObject = self.connection()?.remoteObjectProxy as? AppProtocol {
-                remoteObject.log(stdErr: "Authentication Error: \(error)")
-            }
+            log(stdErr: "Authentication Error: \(error)")
             return false
         }
         return true
@@ -140,7 +220,7 @@ class Helper: NSObject, NSXPCListenerDelegate, HelperProtocol {
         let stdOutHandler =  { (file: FileHandle!) -> Void in
             let data = file.availableData
             guard let output = NSString(data: data, encoding: String.Encoding.utf8.rawValue) else { return }
-            if let remoteObject = self.connection()?.remoteObjectProxy as? AppProtocol {
+            if let remoteObject = self.connection()?.remoteObjectProxy as? HelperToolControllerProtocol {
                 remoteObject.log(stdOut: output as String)
             }
         }
@@ -150,7 +230,7 @@ class Helper: NSObject, NSXPCListenerDelegate, HelperProtocol {
         let stdErrHandler =  { (file: FileHandle!) -> Void in
             let data = file.availableData
             guard let output = NSString(data: data, encoding: String.Encoding.utf8.rawValue) else { return }
-            if let remoteObject = self.connection()?.remoteObjectProxy as? AppProtocol {
+            if let remoteObject = self.connection()?.remoteObjectProxy as? HelperToolControllerProtocol {
                 remoteObject.log(stdErr: output as String)
             }
         }
@@ -166,5 +246,39 @@ class Helper: NSObject, NSXPCListenerDelegate, HelperProtocol {
         }
 
         task.launch()
+    }
+    
+    private var controller: HelperToolControllerProtocol? {
+        self.connection()?.remoteObjectProxy as? HelperToolControllerProtocol
+    }
+    
+    private func log(stdOut s: String)
+    {
+        if let remoteObject = controller {
+            remoteObject.log(stdOut: s)
+        }
+    }
+    
+    private func log(stdErr s: String)
+    {
+        if let remoteObject = controller {
+            remoteObject.log(stdErr: s)
+        }
+    }
+    
+    private func trace(
+        _ s: @autoclosure () -> String,
+        file: StaticString = #file,
+        line: UInt = #line)
+    {
+        #if DEBUG
+        var useFileInfo: Bool { false }
+        if useFileInfo {
+            log(stdOut: "\(file):\(line): \(s())")
+        }
+        else {
+            log(stdOut: s())
+        }
+        #endif
     }
 }

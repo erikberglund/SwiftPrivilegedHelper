@@ -10,9 +10,34 @@ import Foundation
 
 enum HelperAuthorizationError: Error {
     case message(String)
+    
+    init(authorizationError: OSStatus)
+    {
+        self = .message(
+            SecCopyErrorMessageString(authorizationError, nil) as String?
+                ?? "Unknown error"
+        )
+    }
 }
 
 class HelperAuthorization {
+    
+    static func makeRight(
+        command: Selector,
+        description: String) -> HelperAuthorizationRight
+    {
+        let customRule: [String: Any] = [
+            kAuthorizationRightKeyClass: "user",
+            kAuthorizationRightKeyGroup: "admin",
+            kAuthorizationRightKeyVersion: 1
+        ]
+        
+        return HelperAuthorizationRight(
+            command: command,
+            description: description,
+            ruleCustom: customRule
+        )
+    }
 
     // MARK: -
     // MARK: Variables
@@ -20,9 +45,14 @@ class HelperAuthorization {
     // FIXME: Add all functions that require authentication here.
 
     static let authorizationRights = [
-        HelperAuthorizationRight(command: #selector(HelperProtocol.runCommandLs(withPath:authData:completion:)),
-                                 description: "SwiftPrivilegedHelper wants to run the command /bin/ls",
-                                 ruleCustom: [kAuthorizationRightKeyClass: "user", kAuthorizationRightKeyGroup: "admin", kAuthorizationRightKeyVersion: 1])
+        makeRight(
+            command: #selector(HelperProtocol.runCommandLs(withPath:authData:completion:)),
+            description: "SwiftPrivilegedHelper wants to run the command /bin/ls"
+        ),
+        makeRight(
+            command: #selector(HelperProtocol.runCommandUninstall(authData:completion:)),
+            description: "SwiftPrivilegedHelper wants to uninstall helper tool"
+        ),
     ]
 
     // MARK: -
@@ -178,9 +208,12 @@ class HelperAuthorization {
         var authItem = AuthorizationItem(name: authRightName, valueLength: 0, value: UnsafeMutableRawPointer(bitPattern: 0), flags: 0)
 
         // Create the AuthorizationRights for using the AuthorizationItem
-        var authRights = AuthorizationRights(count: 1, items: &authItem)
+        try withUnsafeMutablePointer(to: &authItem)
+        {
+            var authRights = AuthorizationRights(count: 1, items: $0)
 
-        // Check if the user is authorized for the AuthorizationRights. If not the user might be asked for an admin credential.
-        try executeAuthorizationFunction { AuthorizationCopyRights(authRef, &authRights, nil, [.extendRights, .interactionAllowed], nil) }
+            // Check if the user is authorized for the AuthorizationRights. If not the user might be asked for an admin credential.
+            try executeAuthorizationFunction { AuthorizationCopyRights(authRef, &authRights, nil, [.extendRights, .interactionAllowed], nil) }
+        }
     }
 }

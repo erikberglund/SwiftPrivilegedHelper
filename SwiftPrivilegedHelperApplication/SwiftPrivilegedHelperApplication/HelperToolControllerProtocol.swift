@@ -9,7 +9,7 @@
 import Foundation
 
 @objc(AppProtocol)
-protocol AppProtocol {
+protocol HelperToolControllerProtocol {
     func log(stdOut: String) -> Void
     func log(stdErr: String) -> Void
 }
