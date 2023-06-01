@@ -105,7 +105,7 @@ class HelperAuthorization {
 
         // Create an AuthorizationExternalForm from it's data representation
         var authRef: AuthorizationRef?
-        let authRefExtForm: UnsafeMutablePointer<AuthorizationExternalForm> = UnsafeMutablePointer.allocate(capacity: kAuthorizationExternalFormLength * MemoryLayout<AuthorizationExternalForm>.size)
+        let authRefExtForm: UnsafeMutablePointer<AuthorizationExternalForm> = UnsafeMutablePointer.allocate(capacity: Int(kAuthorizationExternalFormLength) * MemoryLayout<AuthorizationExternalForm>.size)
         memcpy(authRefExtForm, data.bytes, data.length)
 
         // Extract the AuthorizationRef from it's external form
@@ -140,7 +140,7 @@ class HelperAuthorization {
         guard var authRefExtForm = try self.emptyAuthorizationExternalForm() else { return nil }
 
         // Encapsulate the external form AuthorizationRef in an NSData object
-        return NSData(bytes: &authRefExtForm, length: kAuthorizationExternalFormLength)
+        return NSData(bytes: &authRefExtForm, length: Int(kAuthorizationExternalFormLength))
     }
 
     // MARK: -
